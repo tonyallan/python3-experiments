@@ -148,6 +148,11 @@ def simple_website(website_id, host=None, upstream=None):
     return api(path='apps/http/servers/server0/routes', method='POST', data=config)
 ```
 
+With a call such as:
+```
+simple_website('test', host='test.localhost', upstream='localhost:9004')
+```
+
 
 ## Vars
 There is also a function to define variables to use in configuration strings:
