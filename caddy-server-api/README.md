@@ -97,8 +97,8 @@ curl -X POST "http://localhost:2019/stop"
 The base [JSON Config Structure](https://caddyserver.com/docs/json/) is:
 ```
 {
-    "admin": {},
-    "logging": {},
+    "admin": {•••},
+    "logging": {•••},
     "storage": {•••},
     "apps": {•••}
 }
