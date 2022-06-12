@@ -1,4 +1,8 @@
 # python3-experiments
- Trying out stuff with Python3
+ Exploring Python3 and various APIs using Python 3 code snippets
 
- Code snippets, trying out API's
+ ## Caddy API
+ A set of examples on how to control the [Caddy server](https://caddyserver.com/) 
+ [API](https://caddyserver.com/docs/quick-starts/api) using Python 3
+
+ [Examples](caddy-server-api/README.md)
