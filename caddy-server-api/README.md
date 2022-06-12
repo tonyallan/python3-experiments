@@ -104,7 +104,7 @@ The base [JSON Config Structure](https://caddyserver.com/docs/json/) is:
 }
 ```
 
-Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has the structure:
+Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has the structure (within the whole JSON config):
 ```
 {'apps': 
     {'http': 
@@ -117,7 +117,9 @@ Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has th
                             "match": [{•••}],
                             "handle": [{•••}],
                             "terminal": false
-                        } 
+                        },
+                        {•••},
+                        {•••},
                     ]
                 }
             }
@@ -125,6 +127,27 @@ Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has th
     }
 }
 ```
+
+Because you can POST to a point within the overall structure, code can be simpler, for example:
+```python3
+def simple_website(website_id, host=None, upstream=None):
+    config = dict(
+        match=[
+            dict(
+                host=[host])
+            ],
+        terminal=True,
+        handle=[
+            dict(
+                handler='reverse_proxy',
+                upstreams=[dict(dial=upstream)])
+        ])
+
+    config['@id'] = website_id
+
+    return api(path='apps/http/servers/server0/routes', method='POST', data=config)
+```
+
 
 ## Vars
 There is also a function to define variables to use in configuration strings:
