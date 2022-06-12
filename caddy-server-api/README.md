@@ -59,7 +59,7 @@ Notes:
 ### Sample configuration
 
 <http://localhost:2019/id/ping/>
-\```json
+```json
 {
   "@id": "ping",
   "handle": [
@@ -83,7 +83,7 @@ Notes:
   ],
   "terminal": true
 }
-\```
+```
 
 
 ## Other API functions
@@ -115,14 +115,14 @@ Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has th
 ## Vars
 There is also a function to define variables to use in configuration strings:
 ```
-    handle=[
-        dict(
-            handler='vars',
-            foo=bar),
-        dict(
-            handler='static_response',
-            •••)
-        ])
+handle=[
+    dict(
+        handler='vars',
+        foo=bar),
+    dict(
+        handler='static_response',
+        •••)
+    ])
 ```
 
 The variables are accessed using a string such as:
