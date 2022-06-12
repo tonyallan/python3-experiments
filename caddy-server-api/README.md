@@ -149,7 +149,7 @@ def simple_website(website_id, host=None, upstream=None):
 ```
 
 With a call such as:
-```
+```python3
 simple_website('test', host='test.localhost', upstream='localhost:9004')
 ```
 
