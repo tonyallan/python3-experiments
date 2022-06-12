@@ -89,7 +89,7 @@ Notes:
 
 
 ## Other API functions
-You can alsoperform specific functions (e.g. [stopping](https://caddyserver.com/docs/api#post-stop) Caddy)
+You can also perform specific functions (e.g. [stopping](https://caddyserver.com/docs/api#post-stop) Caddy)
 ```
 curl -X POST "http://localhost:2019/stop"
 ```
@@ -106,12 +106,24 @@ The base [JSON Config Structure](https://caddyserver.com/docs/json/) is:
 
 Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has the structure:
 ```
-[{
-    "group": "",
-    "match": [{•••}],
-    "handle": [{•••}],
-    "terminal": false
-}]
+{'apps': 
+    {'http': 
+        {'servers': 
+            {'server0': 
+                {'listen': [':443'], 
+                    'routes': [
+                        {
+                            "group": "",
+                            "match": [{•••}],
+                            "handle": [{•••}],
+                            "terminal": false
+                        } 
+                    ]
+                }
+            }
+        }
+    }
+}
 ```
 
 ## Vars
