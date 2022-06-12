@@ -58,7 +58,7 @@ And the three websites:
 Notes:
 * Most configuration errors return an unhelpful status 500. The Caddy log might give a hint about the error.
 
-### Sample configuration
+### Sample configuration extract
 
 <http://localhost:2019/id/ping/> response:
 ```json
