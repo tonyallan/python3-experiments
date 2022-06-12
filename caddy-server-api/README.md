@@ -156,7 +156,7 @@ simple_website('test', host='test.localhost', upstream='localhost:9004')
 
 ## Vars
 There is also a function to define variables to use in configuration strings:
-```
+```python3
 handle=[
     dict(
         handler='vars',
