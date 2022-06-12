@@ -3,6 +3,8 @@ The [Caddy server](https://caddyserver.com/) has a [REST API](https://caddyserve
 
 The following examples show how to use the API using Python 3.
 
+See <caddy-api.py>.
+
 
 ## Setup
 These examples used Caddy v2.5.1.
@@ -58,7 +60,7 @@ Notes:
 
 ### Sample configuration
 
-<http://localhost:2019/id/ping/>
+<http://localhost:2019/id/ping/> response:
 ```json
 {
   "@id": "ping",
