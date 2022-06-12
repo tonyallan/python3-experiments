@@ -1,6 +1,4 @@
 import json
-import sys
-import urllib.parse
 import urllib.request
 
 
@@ -12,9 +10,6 @@ def simple_website(website_id, host=None, upstream=None):
             ],
         terminal=True,
         handle=[
-            #dict(
-            #    handler='vars',
-            #    website_id=website_id),
             dict(
                 handler='reverse_proxy',
                 upstreams=[dict(dial=upstream)])
@@ -33,9 +28,6 @@ def static_website(website_id, host=None, status_code=200, headers={}, body=None
             ],
         terminal=True,
         handle=[
-            #dict(
-            #    handler='vars',
-            #    website_id=website_id),
             dict(
                 handler='static_response',
                 status_code=status_code,
@@ -69,7 +61,7 @@ def initial_config():
 
     response = static_website('ping', host='ping.localhost', 
         headers={'Content-Type':['application/json']},
-        body='{"result":"ok", "website":"{http.vars.id}", "unix_ms":"{time.now.unix_ms}"}')
+        body='{"result":"ok", "unix_ms":"{time.now.unix_ms}"}')
 
 
 def api(path='', method='GET', string=None, data=None):
