@@ -3,54 +3,6 @@ import sys
 import urllib.parse
 import urllib.request
 
-"""
-References
-https://caddyserver.com/docs/api
-https://caddyserver.com/docs/command-line
-
-View your full configuration
-http://localhost:2019/config/
-
-# setup
-Run with Caddy v2.5.1
-
-cd ~/Development
-./caddy run
-
-cd ~/Development/webproject-apps/test1
-#python3 main.py --port 9004 --env test
-python3 -m http.server 9004 --bind=localhost
-
-cd ~/Development/webproject-experiments
-python3 caddy-api.py
-
-Admin endpoint tcp/localhost:2019
-http://localhost:2019/config/apps/http/servers/srv0/routes/0
-
-Metrics endpoint
-http://localhost:2019/metrics
-
-
-curl -X POST "http://localhost:2019/stop"
-
-basic json config structure (https://caddyserver.com/docs/json/)
-{
-    "admin": {},
-    "logging": {},
-    "storage": {•••},
-    "apps": {•••}
-}
-
-basic routes structure
-[{
-    "group": "",
-    "match": [{•••}],
-    "handle": [{•••}],
-    "terminal": false
-}]
-
-""" 
-
 
 def simple_website(website_id, host=None, upstream=None):
     config = dict(
@@ -60,13 +12,15 @@ def simple_website(website_id, host=None, upstream=None):
             ],
         terminal=True,
         handle=[
-            dict(
-                handler='vars',
-                website_id=website_id),
+            #dict(
+            #    handler='vars',
+            #    website_id=website_id),
             dict(
                 handler='reverse_proxy',
                 upstreams=[dict(dial=upstream)])
         ])
+
+    config['@id'] = website_id
 
     return api(path='apps/http/servers/server0/routes', method='POST', data=config)
 
@@ -79,15 +33,17 @@ def static_website(website_id, host=None, status_code=200, headers={}, body=None
             ],
         terminal=True,
         handle=[
+            #dict(
+            #    handler='vars',
+            #    website_id=website_id),
             dict(
-                handler='vars',
-                website_id=website_id),
-        dict(
-            handler='static_response',
-            status_code=status_code,
-            headers=headers,
-            body=body)
-        ])
+                handler='static_response',
+                status_code=status_code,
+                headers=headers,
+                body=body)
+            ])
+
+    config['@id'] = website_id
 
     return api(path='apps/http/servers/server0/routes', method='POST', data=config)
 
@@ -114,26 +70,6 @@ def initial_config():
     response = static_website('ping', host='ping.localhost', 
         headers={'Content-Type':['application/json']},
         body='{"result":"ok", "website":"{http.vars.id}", "unix_ms":"{time.now.unix_ms}"}')
-
-
-
-
-
-# forward_auth
-# # Serve the authentication gateway itself
-# auth.example.com {
-#     reverse_proxy authelia:9091
-# }
-
-# # Serve your app
-# app1.example.com {
-#     forward_auth authelia:9091 {
-#         uri /api/verify?rd=https://auth.example.com
-#         copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-#     }
-
-#     reverse_proxy app1:8080
-# }
 
 
 def api(path='', method='GET', string=None, data=None):
@@ -172,22 +108,24 @@ def api(path='', method='GET', string=None, data=None):
 
     except json.decoder.JSONDecodeError as e:
         return dict(message=str(e), path=path)
-        
+
     return dict(message='unknown error', path=path)
 
 
 def list_websites():
+    # Update to use @id instead of vars
+
     routes = api('apps/http/servers/server0/routes/')
 
     for route in routes:
-        website_id = 'unknown'
+        website_id = route.get('@id', 'unknown')
         reverse_proxy = ''
 
         for handle in route['handle']:
             handler = handle['handler']
 
-            if handler == 'vars':
-                website_id = handle['website_id']
+            # if handler == 'vars':
+            #     website_id = handle['website_id']
 
             if handler == 'reverse_proxy':
                 reverse_proxy = str(handle['upstreams'][0]['dial'])
