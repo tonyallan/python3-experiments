@@ -13,7 +13,7 @@ View your full configuration
 http://localhost:2019/config/
 
 Start Caddy with no initial configuration:
-```
+```shell
 ./caddy run
 ```
 
@@ -23,14 +23,14 @@ While it is running you can access the:
 
 
 Start a local webserver (anything will do) for the examples:
-```
+```shell
 python3 -m http.server 9004 --bind=localhost
 ```
 
 
 ## Example script `caddy-api.py`
 Download and then run the example:
-```
+```shell
 python3 caddy-api.py
 ```
 
@@ -90,12 +90,12 @@ Notes:
 
 ## Other API functions
 You can also perform specific functions (e.g. [stopping](https://caddyserver.com/docs/api#post-stop) Caddy)
-```
+```shell
 curl -X POST "http://localhost:2019/stop"
 ```
 
 The base [JSON Config Structure](https://caddyserver.com/docs/json/) is:
-```
+```json
 {
     "admin": {•••},
     "logging": {•••},
@@ -105,13 +105,13 @@ The base [JSON Config Structure](https://caddyserver.com/docs/json/) is:
 ```
 
 Each [route](https://caddyserver.com/docs/json/apps/http/servers/routes/) has the structure (within the whole JSON config):
-```
-{'apps': 
-    {'http': 
-        {'servers': 
-            {'server0': 
-                {'listen': [':443'], 
-                    'routes': [
+```json
+{"apps": 
+    {"http": 
+        {"servers": 
+            {"server0": 
+                {"listen": [":443"], 
+                    "routes": [
                         {
                             "group": "",
                             "match": [{•••}],
@@ -168,7 +168,7 @@ handle=[
 ```
 
 The variables are accessed using a string such as:
-```
+```python3
 "{http.vars.foo}"
 ```
 
