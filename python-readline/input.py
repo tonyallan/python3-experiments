@@ -1,7 +1,5 @@
 import readline
 
-# https://docs.python.org/3/library/readline.html
-
 print('A blank line will exit this program\n')
 
 while True:

@@ -1,6 +1,7 @@
 # Python readline adds add history and editting to input()
 
-If you add `inport readline` to a python program history and line editting functionality is added to thr `input()` function.
+If you add `inport readline` to a Python 3 program, 
+history and line editting functionality is added to the `input()` function.
 
 
 # Example
@@ -8,8 +9,6 @@ If you add `inport readline` to a python program history and line editting funct
 [input.py](https://github.com/tonyallan/python3-experiments/blob/main/python-readline/input.py):
 ```python3
 import readline
-
-# https://docs.python.org/3/library/readline.html
 
 print('A blank line will exit this program\n')
 
@@ -25,4 +24,4 @@ print('\nDone')
 ```
 
 ## Reference
-1. [readline](https://docs.python.org/3/library/readline.html)
+1. Python3 [GNU readline interface](https://docs.python.org/3/library/readline.html)
