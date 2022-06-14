@@ -9,7 +9,7 @@ See [caddy-api.py](https://github.com/tonyallan/python3-experiments/blob/main/ca
 ## Setup
 These examples assume Caddy v2.5.1 or later.
 
-View your full configuration
+View your full configuration in your browser:
 http://localhost:2019/config/
 
 Start Caddy with no initial configuration:
@@ -22,15 +22,16 @@ While it is running you can access the:
 * Metrics endpoint <http://localhost:2019/metrics>
 
 
-Start a local webserver (anything will do) for the examples:
+Start a local webserver (anything will do) in a separate terminal for the examples:
 ```shell
 python3 -m http.server 9004 --bind=localhost
 ```
 
 
 ## Example script `caddy-api.py`
-Download and then run the example:
+Download and then run the example in a separate terminal:
 ```shell
+cd ~/GitHub/python3-experiments/caddy-server-api
 python3 caddy-api.py
 ```
 
