@@ -3,7 +3,7 @@ The [Caddy server](https://caddyserver.com/) has a [REST API](https://caddyserve
 
 The following examples show how to use the API using Python 3.
 
-See [caddy-api.py](https://github.com/tonyallan/python3-experiments/blob/main/caddy-server-api/caddy-api.py).
+See [caddy-api.py](caddy-api.py).
 
 
 ## Setup

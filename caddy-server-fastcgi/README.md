@@ -4,7 +4,7 @@ The [Caddy server](https://caddyserver.com/) supports the reverse_proxy
 
 This is a simple test of the functionality using python.
 
-See [test.py](https://github.com/tonyallan/python3-experiments/blob/main/caddy-server-fastcgi/test.py).
+See [test.py](test.py).
 
 
 ## Setup
