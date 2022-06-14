@@ -1,0 +1,5 @@
+fastcgi.localhost {
+	reverse_proxy unix/caddy-server-fastcgi/fcgi.sock {
+		transport fastcgi
+	}
+}
