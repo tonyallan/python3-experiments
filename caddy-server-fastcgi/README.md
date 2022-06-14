@@ -1,5 +1,6 @@
 # Caddy Server FastCGI
-The [Caddy server](https://caddyserver.com/) supports [FastCGI](https://pypi.org/project/fastcgi/).
+The [Caddy server](https://caddyserver.com/) supports the reverse_proxy
+[fastcgi](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#the-fastcgi-transport) transport.
 
 This is a simple test of the functionality using python.
 
@@ -7,7 +8,7 @@ See [test.py](https://github.com/tonyallan/python3-experiments/blob/main/caddy-s
 
 
 ## Setup
-These examples used Caddy v2.5.1.
+This example assumes Caddy v2.5.1 or later.
 
 Install the [fastcgi](https://pypi.org/project/fastcgi/) dependancy:
 ```
@@ -57,14 +58,15 @@ def hello():
     """)
 ```
 
-Start the app:
+Start the app in a separate terminal:
 ```
 cd ~/GitHub/python3-experiments/caddy-server-fastcgi
 python3 test.py
 ```
 
 This creates a unix socket file `fcgi.sock` with a filename that matches the `Caddyfile`. 
-(GUI file managers hide these files so use `ls` in the terminal.)
 
-Use your browser to access:
+GUI file managers hide UNIX socket files so use `ls` in the terminal.
+
+Use your browser to view:
 * <https://fastcgi.localhost/aaa?a=b>

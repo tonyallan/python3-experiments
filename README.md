@@ -9,7 +9,7 @@ good idea to document these experiements.
 
 ## Running the samples
 It is assumed that:
-* the CWD is `~/GitHub/python3-experiments`
+* the current working directory is `~/GitHub/python3-experiments`
 * and that `caddy` has been copied to this directory
 
 
@@ -21,7 +21,7 @@ using the [REST API](https://caddyserver.com/docs/quick-starts/api).
 
 
 ## Caddy Server Python FastCGI
-A Python 3 example using the Caddy `fastCGI` transport.
+A Python 3 example using the Caddy reverse proxy `fastCGI` transport.
 
 [Details](caddy-server-fastcgi/README.md)
 

@@ -7,7 +7,7 @@ See [caddy-api.py](https://github.com/tonyallan/python3-experiments/blob/main/ca
 
 
 ## Setup
-These examples used Caddy v2.5.1.
+These examples assume Caddy v2.5.1 or later.
 
 View your full configuration
 http://localhost:2019/config/
