@@ -17,14 +17,14 @@ It is assumed that:
 A Python 3 example on how to control the [Caddy server](https://caddyserver.com/) 
 using the [REST API](https://caddyserver.com/docs/quick-starts/api).
 
-[Details](caddy-server-api/README.md)
+[Details](caddy-server-api/)
 
 
 ## Caddy Server Python FastCGI
 A Python 3 example using the Caddy reverse proxy `fastCGI` transport.
 
-[Details](caddy-server-fastcgi/README.md)
+[Details](caddy-server-fastcgi/)
 
 
 ## Python readline adds add history and editting to input()
-[Details](python-readline/README.md)
+[Details](python-readline/)
