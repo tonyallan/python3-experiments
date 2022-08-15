@@ -31,7 +31,7 @@ cd ~/GitHub/python3-experiments
 ./caddy run --config caddy-server-auth/Caddyfile
 ```
 
-Start the app server in a separate terminal:
+Start the app server in a separate terminal (port 8002):
 ```shell
 cd ~/GitHub/python3-experiments/caddy-server-auth
 python3 app-server.py
@@ -41,7 +41,7 @@ starting app server
 (Press CTRL+C to quit)
 ```
 
-Start the auth server in another separate terminal (a hardcoded token is specified for this example only:
+Start the auth server in another separate terminal — a *TEST* API token is specified for this example — in a real system the inityial token is auotmatically generated when the server starts (port 8001):
 ```shell
 cd ~/GitHub/python3-experiments/caddy-server-auth
 python3 auth-server.py api-bfyujsagbtnfvfwjvwfut3hiwy
@@ -52,16 +52,26 @@ Authorization: Bearer api-bfyujsagbtnfvfwjvwfut3hiwy
 (Press CTRL+C to quit)
 ```
 
-Use your browser to view the website — <https://localhost/test>.
+Use your browser to view a test page — <https://localhost/test>.
+
+Two *TEST* users are defined:
+* John Smith (john@example.com / password1) with a role of admin
+* Mary Jones (mary@example.com / password2) with a role of user
+
+
+And a Service Account with a *TEST* API token of `api-bfyujsagbtnfvfwjvwfut3hiwy`.
 
 
 ## Caddyfile
 
 The `Caddyfile` has three parts.
 
-The first part uses the route `/auth/check` to filter requests to the proxies that follow.
 
-1`forward_auth` forwards all requests to `/auth/check` using the `GET` method so as not to consume the body (if present).
+### `forward_auth`
+
+The first part uses the route `/auth/check` to authenticate each request to the proxies that follow. The `GET` method is used so the body (if present) is not consumed.
+
+1. `forward_auth` forwards all requests to `/auth/check`.
 1. The `X-User` header contains some information about the authenticated user.
 1. The `X-Forwarded-Uri` header passes the original path to the proxy servers.
 
@@ -71,6 +81,9 @@ The first part uses the route `/auth/check` to filter requests to the proxies th
         copy_headers X-User X-Forwarded-Uri
     }
 ```
+
+
+### auth server
 
 The second part is a proxy to handle all requests for the `/auth` route. 
 ```
@@ -83,6 +96,8 @@ In this example the auth server has the following routes:
 * `/auth/sign-in` — display the sign-in web page
 * `/auth/sign-out` — removes the session-token and cookie
 
+
+### application server
 
 The last part of the `Caddyfile` passes all remaining requests to the application server.
 ```
