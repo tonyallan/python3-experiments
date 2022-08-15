@@ -16,13 +16,11 @@ It is assumed that:
 ## Caddy Server API
 A Python 3 example on how to control the [Caddy server](https://caddyserver.com/) 
 using the [REST API](https://caddyserver.com/docs/quick-starts/api).
-
 [Details](caddy-server-api/)
 
 
 ## Caddy Server Python FastCGI
 A Python 3 example using the Caddy reverse proxy `fastCGI` transport.
-
 [Details](caddy-server-fastcgi/)
 
 
