@@ -1,0 +1,11 @@
+# test with https://localhost
+
+localhost {
+	forward_auth localhost:8001 {
+		uri /auth/check
+		copy_headers X-User X-Forwarded-Uri
+	}
+
+	reverse_proxy /auth/* localhost:8001
+	reverse_proxy localhost:8002
+}
