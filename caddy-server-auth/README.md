@@ -69,7 +69,7 @@ The `Caddyfile` has three parts.
 
 ### `forward_auth`
 
-The first part uses the route `/auth/check` to authenticate each request to the proxies that follow. The `GET` method is used so the body (if present) is not consumed.
+The first part uses the route `/auth/check` to authenticate each request to the proxies that follow. The `GET` method is used so the body (if present) is not consumed. `/auth/check` is the verification endpoint.
 
 1. `forward_auth` forwards all requests to `/auth/check`.
 1. The `X-User` header contains some information about the authenticated user.
@@ -90,8 +90,7 @@ The second part is a proxy to handle all requests for the `/auth` route.
     reverse_proxy /auth/* localhost:8001
 ```
 
-In this example the auth server has the following routes:
-* `/auth/check` — filter requests (described above)
+In this example the auth server has the following additional routes:
 * `/auth/password-authenticate` — processes the sign-in form and creates the session token and cookie
 * `/auth/sign-in` — display the sign-in web page
 * `/auth/sign-out` — removes the session-token and cookie
@@ -111,9 +110,16 @@ In this example the app server has the following routes:
 * `/api-test` — returns JSON data for api access
 
 
+## Browser UI
+
+Sign-in as one of the users shown above.
+
+* <https://localhost>
+* <https://localhost/test>
 
 
-## API example (use the api token returned when the server starts)
+
+## API (use the api token returned when the server starts)
 
 As well as password users, an API can access the website using the `Authorization` header.
 
@@ -130,3 +136,19 @@ curl --header "Authorization: Bearer api-bfyujsagbtnfvfwjvwfut3hiwy" https://loc
 404: Not Found
 
 ````
+
+
+## Notes
+
+###  `X-Forwarded-For` header
+
+If a request goes through multiple proxies (or one proxy multiple times), the addresses of each successive proxy is listed.
+
+The format is:
+```
+X-Forwarded-For: <client>, <proxy1>, <proxy2>
+```
+
+[more information](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For)
+
+

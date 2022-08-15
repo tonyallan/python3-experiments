@@ -87,32 +87,36 @@ def check_password(password, hashed_and_salted_password):
 
 
 def response_ok(text, headers={}):
-    print('HTTPOk', text)
+    print(f'HTTPOk {text=}')
+    print('headers =', json.dumps(headers, indent=2))
 
     raise web.HTTPOk(text=text, headers=headers)
 
 
-def response_unauthorized(text, headers={}, redirect=None):
-    print('HTTPUnauthorized', text)
-
+def redirect_to_signin_page(text, headers={}, redirect=None, host=None):
     query = {}
 
     if text is not None:
-        query['reason'] = text
+        # comma not allowed in sign-in page because of a split on the comma
+        query['reason'] = text.replace(',', ';')
 
     if redirect is not None:
+        # redirect can contain commas because it comes from X-Forwarded-Uri
         query['redirect'] = redirect
 
     query_text = urllib.parse.urlencode(query)
+    location = f'https://{host}/auth/sign-in?' + query_text
+    print(f'{location=}')
 
-    raise web.HTTPFound(text=text, location='/auth/sign-in?' + query_text, headers=headers)
+    raise web.HTTPSeeOther(text=text, location=location, headers=headers)
 
 
 def get_user_from_header(request):
+    host = request.headers.get('Host')
     user = request.headers.get('X-User')
 
     if user is None:
-        response_unauthorized('X-User header not found')
+        redirect_to_signin_page('X-User header not found', host=host)
 
     try:
         return json.loads(user)
@@ -120,7 +124,7 @@ def get_user_from_header(request):
     except json.decoder.JSONDecodeError as e:
         print('get_user_from_header()', e)
     
-    response_unauthorized('invalid X-User header')
+    redirect_to_signin_page('invalid X-User header', host=host)
 
 
 def delete_auth_cookie(request):
@@ -135,20 +139,34 @@ def delete_auth_cookie(request):
                       'Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'}
 
 
+# Authenticate each request (via forward_auth)
+
 @routes.get('/auth/check')
 async def auth_check(request):
     ds = request.app.get('ds')
 
-    forwarded_uri = request.headers.get('X-Forwarded-Uri')
-    forwarded_path = urllib.parse.urlparse(forwarded_uri).path
-    print(f'---------- /auth/check ---------> {forwarded_path}')
+    host            = request.headers.get('Host')
+    forwarded_uri   = request.headers.get('X-Forwarded-Uri')
+    forwarded_proto = request.headers.get('X-Forwarded-Proto')
+
+    # X-Forwarded-For: <client>, <proxy1>, <proxy2>
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
+
+    client_uri = forwarded_uri.split(',', 1)[0]
+    new_path   = urllib.parse.urlparse(client_uri).path
+
+    print(f'---------- /auth/check ---------> {new_path=}')
+    print(f'{forwarded_uri=}')
+    print(f'{client_uri=}')
+
+    headers = {}
 
     authorization = request.headers.get('Authorization')
 
     if authorization:
-        # Bearer token authentication (assume JSON based)
+        # Bearer token authentication (assume JSON based request and response)
 
-        b, api_token = authorization.split(' ', 1)
+        bearer, api_token = authorization.split(' ', 1)
 
         user = ds.get_user_from_token(api_token)
 
@@ -158,31 +176,33 @@ async def auth_check(request):
             raise web.HTTPUnauthorized()
 
     else:
-        # Password authentication
+        # Password authentication (with two public routes)
 
-        if forwarded_path in ['/auth/sign-in', '/auth/password-authenticate']:
-            response_ok(f'no auth check for {forwarded_path}')
+        if new_path in ['/auth/sign-in', '/auth/password-authenticate']:
+           response_ok(f'continue to {new_path=}', headers=headers)
+
+        if new_path == '/auth/sign-out':
+            new_path = None
 
         session_token = request.cookies.get('Auth')
         print(f'found {session_token=}')
 
-        if forwarded_uri == '/auth/sign-out':
-            forwarded_uri = None
-
         if session_token is None:
-            response_unauthorized('(auth cookie not found)', redirect=forwarded_uri)
+            redirect_to_signin_page('(auth cookie not found)', 
+                headers=headers, redirect=new_path, host=host)
 
         user = ds.get_user_from_token(session_token)
 
         if user is None:
-            headers = delete_auth_cookie(request)
-            response_unauthorized(f'(user not found)', headers=headers, redirect=forwarded_uri)
+            headers.update(delete_auth_cookie(request))
+            redirect_to_signin_page(f'(user not found)', 
+                headers=headers, redirect=new_path, host=host)
 
-    headers = {'X-User': json.dumps(user)}
+    headers.update({'X-User': json.dumps(user)})
     response_ok('continue to authorised page', headers=headers)
 
 
-# all remaining routes are auth server functions
+# all remaining routes are auth server functions (to routes /auth/*)
 
 @routes.post('/auth/password-authenticate')
 async def auth_password_authenticate(request):
@@ -201,22 +221,22 @@ async def auth_password_authenticate(request):
         redirect = data.get('redirect', [None])[0]
 
         if email is None:
-            response_unauthorized('Please enter an email address')
+            redirect_to_signin_page('Please enter an email address', host=host)
 
         if password is None:
-            response_unauthorized('Please enter a password')
+            redirect_to_signin_page('Please enter a password', host=host)
 
         user = ds.get_user_by_email(email, remove_password=False)
 
         if user is None:
-            response_unauthorized('Email address not found')
+            redirect_to_signin_page('Email address not found', host=host)
 
         user_id = user.get('user_id')
 
         stored_password = user.get('password')
 
         if not check_password(password, stored_password):
-            response_unauthorized('Invalid password')
+            redirect_to_signin_page('Invalid password', host=host)
 
         session_token = ds.add_token(user_id, type='session')
 
@@ -235,7 +255,12 @@ async def auth_password_authenticate(request):
 
 @routes.get('/auth/sign-in')
 async def sign_in(request):
+    reason   = request.query.get('reason', '').split(',', 1)[0]
+    redirect = request.query.get('redirect', '').split(',', 1)[0]
+
     print('/sign-in page (then post to /auth/password-authenticate)')
+    print(f'{reason=}')
+    print(f'{redirect=}')
 
     return web.Response(content_type='text/html', text=f"""
         <!doctype html>
@@ -257,10 +282,10 @@ async def sign_in(request):
                 <h4 class="text-center text-secondary mt-3">
                  Please Sign-in
                 </h4>
-                <p id="message" class="text-center small text-warning"></p>
+                <p id="message" class="text-center small text-warning">{reason}</p>
 
                 <form action="/auth/password-authenticate" method="post">
-                  <input type="hidden" id='redirect' name="redirect" vaue="">
+                  <input type="hidden" id='redirect' name="redirect" vaue="{redirect}">
                   <div class="form-group mt-2">
                     <input type="email" class="form-control" name="email" placeholder="Email address">
                   </div>
@@ -279,14 +304,14 @@ async def sign_in(request):
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" 
                 integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" 
                 crossorigin="anonymous"></script>
-            <script>
+            <!-- script>
                 const params = new Proxy(new URLSearchParams(window.location.search), {{
                   get: (searchParams, prop) => searchParams.get(prop),
                 }});
 
                 document.getElementById("message").textContent = params.reason;
                 document.getElementById("redirect").value = params.redirect;
-            </script>
+            </script -->
           </body>
         </html>
         """)
