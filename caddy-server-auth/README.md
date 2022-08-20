@@ -4,11 +4,11 @@ This is a example of how to use the Caddy [forward_auth](https://caddyserver.com
 
 See [auth-server.py](auth-server.py) and [app-server.py](app-server.py).
 
-> Important note: The security of this example has not been independantly reviewed. Use at your own risk.
+> Important note: The security of this example has not been independently reviewed. Use at your own risk.
 
 
 ## Setup
-This example assumes Caddy v2.5.1 or later.
+This example assumes Caddy v2.5.2 or later.
 
 
 Use following `Caddyfile`:
@@ -83,7 +83,7 @@ The first part uses the route `/auth/check` to authenticate each request to the 
 ```
 
 
-### auth server
+### Auth server
 
 The second part is a proxy to handle all requests for the `/auth` route. 
 ```
@@ -96,7 +96,7 @@ In this example the auth server has the following additional routes:
 * `/auth/sign-out` — removes the session-token and cookie
 
 
-### application server
+### Application server
 
 The last part of the `Caddyfile` passes all remaining requests to the application server.
 ```
@@ -123,7 +123,7 @@ Sign-in as one of the users shown above.
 
 As well as password users, an API can access the website using the `Authorization` header.
 
-When the auth server starts, it prints the 
+When the auth server starts, it prints the `Authorization` which has been automatically generated or specified on the command line.
 
 ```shell
 curl --header "Authorization: Bearer api-bfyujsagbtnfvfwjvwfut3hiwy" https://localhost/api-test
